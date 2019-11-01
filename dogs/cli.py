@@ -29,7 +29,7 @@ def find_config_file():
 def stats(server, config, details=False):
     print(f"\nServer: {server}")
     tabbed = "\n    "
-    si = config.servers[server]
+    si = server
     print(f"    region: {si.region}")
     print(f"    size: {si.size}")
     print(f"    maximum snapshots: {si.snapshot_max}\n")

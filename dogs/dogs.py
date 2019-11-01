@@ -15,7 +15,7 @@ class DOGS:
         cfg = Box.from_yaml(filename=config_file)
         self.config_file = config_file
         self.token = cfg.token
-        self.config = cfg.servers[server_name]
+        self.config = server_name
         self.name = server_name
         self.manager = digitalocean.Manager(token=self.token)
         self.droplet = None
@@ -142,4 +142,4 @@ def find_droplets(prefix, config):
 
 def find_snapshots(prefix, config):
     manager = digitalocean.Manager(token=config.token)
-    return [f"{x.name}" for x in manager.get_all_snapshots() if x.name.startswith(prefix)]
+    return [f"{x.name}" for x in manager.get_all_snapshots() if x.name.startswith(str(prefix))]
