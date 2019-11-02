@@ -13,6 +13,7 @@ class DOGS:
     def __init__(self, server_config, config_file="config.yaml"):
         general_config = Box.from_yaml(filename=config_file)
         self.token = general_config.token
+        self.snapshot_max = general_config.snapshot_max
         self.config = server_config
         self.name = server_config.get("name")
         self.droplet_id = server_config.get("droplet_id")

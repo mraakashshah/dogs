@@ -1,10 +1,9 @@
 token: SuperSecretSauce # API Secret
-snapshot_max: 1
+snapshot_max: 2
 servers:
   - name: ubuntu-1804 # full name of server
     droplet_id: # optional, in URL of droplet settings
     region: nyc3
-    size: s-1vcpu-2gb
-    firewall_id: UUID
-    snapshot_max: 2
-    ssh_key: UUID
+    size: s-1vcpu-1gb
+    firewall_id: UUID # remove if no firewall
+    ssh_key: UUID # last 8 of public key before ==

@@ -33,10 +33,8 @@ def find_config_file():
 def stats(server_config, general_config, details=False):
     print(f"\nServer: {server_config}")
     tabbed = "\n    "
-    si = server_config
-    print(f"    region: {si.region}")
-    print(f"    size: {si.size}")
-    print(f"    maximum snapshots: {si.snapshot_max}\n")
+    print(f"    region: {server_config.region}")
+    print(f"    size: {server_config.size}")
     if details:
         drops = find_droplets(server_config, general_config)
         if drops:
@@ -48,17 +46,18 @@ def stats(server_config, general_config, details=False):
             print(f"    {tabbed.join(snaps)}")
 
 
-def manage(server_config, config_file):
+def manage(servers_config, config_file):
     server_continue = False
     for _ in count():
         if not server_continue:
+            print(f"Maximum snapshots: {servers_config.snapshot_max}\n")
             print("\nWhich server do you want to manage?")
-            opts = list(server_config.servers) + ["Exit"]
+            opts = list(servers_config.servers) + ["Exit"]
             selection = cutie.select(options=opts)
             if selection == len(opts) - 1:
                 break
-            server_selection = list(server_config.servers)[selection]
-            stats(server_selection, server_config, details=False)
+            server_selection = list(servers_config.servers)[selection]
+            stats(server_selection, servers_config, details=False)
         else:
             server_selection = server_continue
         server_continue = False
@@ -89,7 +88,7 @@ def manage(server_config, config_file):
             print("\nRemoving old snapshots\n")
             dogs.cleanup()
         elif action == "View Server Info":
-            stats(server_selection, server_config, details=True)
+            stats(server_selection, servers_config, details=True)
             server_continue = server_selection
             continue
 
@@ -103,8 +102,8 @@ def manage(server_config, config_file):
 
 def main():
     config_file = find_config_file()
-    server_config = Box.from_yaml(filename=config_file)
-    manage(server_config, config_file)
+    servers_config = Box.from_yaml(filename=config_file)
+    manage(servers_config, config_file)
 
 
 if __name__ == "__main__":
