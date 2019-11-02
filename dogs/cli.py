@@ -50,7 +50,7 @@ def manage(servers_config, config_file):
     server_continue = False
     for _ in count():
         if not server_continue:
-            print(f"Maximum snapshots: {servers_config.snapshot_max}\n")
+            print(f"Maximum snapshots: {servers_config.snapshot_max}")
             print("\nWhich server do you want to manage?")
             opts = list(servers_config.servers) + ["Exit"]
             selection = cutie.select(options=opts)
@@ -101,6 +101,7 @@ def manage(servers_config, config_file):
 
 
 def main():
+    print("\n")
     config_file = find_config_file()
     servers_config = Box.from_yaml(filename=config_file)
     manage(servers_config, config_file)

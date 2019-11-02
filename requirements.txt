@@ -4,3 +4,4 @@ appdirs
 python-box
 ruamel.yaml
 black
+pylint
