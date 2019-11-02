@@ -10,23 +10,30 @@ _manager = None
 
 
 class DOGS:
-    def __init__(self, server_name, config_file='config.yaml'):
-        self.server_name = server_name
-        cfg = Box.from_yaml(filename=config_file)
-        self.config_file = config_file
-        self.token = cfg.token
-        self.config = server_name
-        self.name = server_name
+    def __init__(self, server_config, config_file='config.yaml'):
+        general_config = Box.from_yaml(filename=config_file)
+        self.token = general_config.token
+        self.config = server_config
+        self.name = server_config.get("name")
+        self.droplet_id = server_config.get("droplet_id")
         self.manager = digitalocean.Manager(token=self.token)
         self.droplet = None
-        try:
-            self.droplet = self.manager.get_droplet(self.config.get("droplet_id"))
-        except digitalocean.Error:
+        if self.droplet_id:
+            try:
+                self.droplet = self.manager.get_droplet(self.droplet_id)
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
+                raise
+        if not self.droplet:
             for d in self.manager.get_all_droplets():
                 if d.name == self.name:
                     self.droplet = d
         if self.droplet:
+            print("droplet found")
             assert self.droplet.name == self.name, "Droplet name and config name do not match!"
+        else:
+            raise AssertionError(f'No droplet found')
+
 
     def create_from_snapshot(self, snapshot):
         my_droplets = self.manager.get_all_droplets()
