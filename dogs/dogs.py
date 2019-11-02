@@ -16,23 +16,15 @@ class DOGS:
         self.snapshot_max = general_config.snapshot_max
         self.config = server_config
         self.name = server_config.get("name")
-        self.droplet_id = server_config.get("droplet_id")
         self.manager = digitalocean.Manager(token=self.token)
         self.droplet = None
-        if self.droplet_id:
-            try:
-                self.droplet = self.manager.get_droplet(self.droplet_id)
-            except digitalocean.Error:
-                try:
-                    for d in self.manager.get_all_droplets():
-                        if d.name == self.name:
-                            self.droplet = d
-                except:
-                    print("Unexpected error:", sys.exc_info()[0])
-                    raise
-            except:
-                print("Unexpected error:", sys.exc_info()[0])
-                raise
+        try:
+            for d in self.manager.get_all_droplets():
+                if d.name == self.name:
+                    self.droplet = d
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
         if self.droplet:
             print("droplet found")
             assert (
