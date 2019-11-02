@@ -43,9 +43,9 @@ class DOGS:
             assert drop.name != self.name, "Droplet already exists"
         new_droplet = digitalocean.Droplet(
             name=self.name,
-            size=self.config.get("size", "s-1vcpu-2gb"),
+            size=self.config.get("size", "s-1vcpu-1gb"),
             image=snapshot.id,
-            region=self.config.get("region", "nyc1"),
+            region=self.config.get("region", "nyc3"),
             ssh_keys=[int(self.config.get("ssh_key"))],
             monitoring=True,
             token=self.token,
@@ -102,9 +102,9 @@ class DOGS:
         self.droplet.load()
         print(f"Droplet online: {self.droplet.ip_address}")
 
-        if self.config.firewall_id:
+        if self.config.get("firewall_id"):
             print("Adding droplet to Firewall")
-            firewall = self.manager.get_firewall(self.config.firewall_id)
+            firewall = self.manager.get_firewall(self.config.get("firewall_id"))
             firewall.add_droplets([self.droplet.id])
 
     def destroy(self, cleanup=True):
@@ -118,9 +118,9 @@ class DOGS:
         snap_action = self.droplet.get_action(snap_info["action"]["id"])
         self.wait_for_action(action=snap_action)
 
-        if self.config.firewall_id:
+        if self.config.get("firewall_id"):
             print("Removing from firewall")
-            firewall = self.manager.get_firewall(self.config.firewall_id)
+            firewall = self.manager.get_firewall(self.config.get("firewall_id"))
             firewall.remove_droplets([self.droplet.id])
 
         self.droplet.destroy()
