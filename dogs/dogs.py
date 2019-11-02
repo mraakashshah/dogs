@@ -22,22 +22,30 @@ class DOGS:
         if self.droplet_id:
             try:
                 self.droplet = self.manager.get_droplet(self.droplet_id)
+            except digitalocean.Error:
+                try:
+                    for d in self.manager.get_all_droplets():
+                        if d.name == self.name:
+                            self.droplet = d
+                except:
+                    print("Unexpected error:", sys.exc_info()[0])
+                    raise
             except:
                 print("Unexpected error:", sys.exc_info()[0])
                 raise
-        if not self.droplet:
-            for d in self.manager.get_all_droplets():
-                if d.name == self.name:
-                    self.droplet = d
         if self.droplet:
             print("droplet found")
             assert (
                 self.droplet.name == self.name
             ), "Droplet name and config name do not match!"
-        else:
-            raise AssertionError(f"No droplet found")
 
     def create_from_snapshot(self, snapshot):
+        account_keys = self.manager.get_all_sshkeys()
+        config_keys = self.config.get("ssh_keys")
+        if config_keys:
+            keys = [key.id for key in account_keys if key.public_key in config_keys]
+        else:
+            keys = [key.id for key in account_keys]
         my_droplets = self.manager.get_all_droplets()
         for drop in my_droplets:
             assert drop.name != self.name, "Droplet already exists"
@@ -46,7 +54,7 @@ class DOGS:
             size=self.config.get("size", "s-1vcpu-1gb"),
             image=snapshot.id,
             region=self.config.get("region", "nyc3"),
-            ssh_keys=[int(self.config.get("ssh_key"))],
+            ssh_keys=keys,
             monitoring=True,
             token=self.token,
             tags=[self.name],
@@ -62,6 +70,7 @@ class DOGS:
         newest = 0
         snapshot = None
         for snap in snapshots:
+            print(snap)
             if snap.name.startswith(str(self.name)):
                 if snap.name.endswith("base") and newest == 0:
                     snapshot = snap
