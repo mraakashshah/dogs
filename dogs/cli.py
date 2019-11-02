@@ -7,13 +7,17 @@ from box import Box
 
 from dogs.dogs import DOGS, find_droplets, find_snapshots
 
-user_config_file = Path(user_config_dir(appname="DOGS", roaming=True, appauthor=False), "config.yaml")
+user_config_file = Path(
+    user_config_dir(appname="DOGS", roaming=True, appauthor=False), "config.yaml"
+)
 local_config_file = Path("config.yaml")
 
 
 def find_config_file():
     if user_config_file.exists() and local_config_file.exists():
-        print("Config files were found in both local and user directory, which do you want to use?")
+        print(
+            "Config files were found in both local and user directory, which do you want to use?"
+        )
         opts = [user_config_file, local_config_file]
         return opts[cutie.select(opts)]
     elif local_config_file.exists():
@@ -43,12 +47,13 @@ def stats(server_config, general_config, details=False):
             print(" Snapshots:")
             print(f"    {tabbed.join(snaps)}")
 
+
 def manage(server_config, config_file):
     server_continue = False
     for _ in count():
         if not server_continue:
             print("\nWhich server do you want to manage?")
-            opts = list(server_config.servers) + ['Exit']
+            opts = list(server_config.servers) + ["Exit"]
             selection = cutie.select(options=opts)
             if selection == len(opts) - 1:
                 break
@@ -69,7 +74,7 @@ def manage(server_config, config_file):
             "Shutdown",
             "View Server Info",
             "Cleanup Old Snapshots",
-            "Cancel"
+            "Cancel",
         ]
         print("\nManage:")
         action = actions[cutie.select(actions, selected_index=1 if dogs.droplet else 0)]
@@ -102,5 +107,5 @@ def main():
     manage(server_config, config_file)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

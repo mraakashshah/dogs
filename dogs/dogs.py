@@ -10,7 +10,7 @@ _manager = None
 
 
 class DOGS:
-    def __init__(self, server_config, config_file='config.yaml'):
+    def __init__(self, server_config, config_file="config.yaml"):
         general_config = Box.from_yaml(filename=config_file)
         self.token = general_config.token
         self.config = server_config
@@ -30,10 +30,11 @@ class DOGS:
                     self.droplet = d
         if self.droplet:
             print("droplet found")
-            assert self.droplet.name == self.name, "Droplet name and config name do not match!"
+            assert (
+                self.droplet.name == self.name
+            ), "Droplet name and config name do not match!"
         else:
-            raise AssertionError(f'No droplet found')
-
+            raise AssertionError(f"No droplet found")
 
     def create_from_snapshot(self, snapshot):
         my_droplets = self.manager.get_all_droplets()
@@ -41,13 +42,13 @@ class DOGS:
             assert drop.name != self.name, "Droplet already exists"
         new_droplet = digitalocean.Droplet(
             name=self.name,
-            size=self.config.get('size', "s-1vcpu-2gb"),
+            size=self.config.get("size", "s-1vcpu-2gb"),
             image=snapshot.id,
-            region=self.config.get('region', "nyc1"),
-            ssh_keys=[int(self.config.get('ssh_key'))],
+            region=self.config.get("region", "nyc1"),
+            ssh_keys=[int(self.config.get("ssh_key"))],
             monitoring=True,
             token=self.token,
-            tags=[self.name]
+            tags=[self.name],
         )
 
         print(f"Creating droplet from snapshot {snapshot.id}")
@@ -61,7 +62,7 @@ class DOGS:
         snapshot = None
         for snap in snapshots:
             if snap.name.startswith(str(self.name)):
-                if snap.name.endswith('base') and newest == 0:
+                if snap.name.endswith("base") and newest == 0:
                     snapshot = snap
                 else:
                     dt = int(snap.name.split("-")[-1])
@@ -77,26 +78,26 @@ class DOGS:
                     action = a
                     break
             else:
-                raise AssertionError(f'could not find {action_name} action')
+                raise AssertionError(f"could not find {action_name} action")
 
         for i in range(20):
             action.load()
-            print(f'{action.type}: {action.status}')
-            if action.status == 'completed':
+            print(f"{action.type}: {action.status}")
+            if action.status == "completed":
                 break
-            elif action.status == 'in-progress':
+            elif action.status == "in-progress":
                 time.sleep(15)
             else:
                 raise Exception(action.status)
         else:
-            raise AssertionError(f'Could not {action.type}')
+            raise AssertionError(f"Could not {action.type}")
 
     def create(self):
         snapshot = self.find_newest_snapshot()
         if not snapshot:
             raise AssertionError("No relevant snapshot found")
         self.create_from_snapshot(snapshot)
-        self.wait_for_action(action_name='create')
+        self.wait_for_action(action_name="create")
         self.droplet.load()
         print(f"Droplet online: {self.droplet.ip_address}")
 
@@ -107,13 +108,13 @@ class DOGS:
 
     def destroy(self, cleanup=True):
         shutdown_info = self.droplet.shutdown()
-        shutdown_action = self.droplet.get_action(shutdown_info['action']['id'])
+        shutdown_action = self.droplet.get_action(shutdown_info["action"]["id"])
         self.wait_for_action(action=shutdown_action)
 
         snap_name = f"{self.name}-{int(time.time())}"
         print(f"Creating snapshot: {snap_name}")
         snap_info = self.droplet.take_snapshot(snap_name)
-        snap_action = self.droplet.get_action(snap_info['action']['id'])
+        snap_action = self.droplet.get_action(snap_info["action"]["id"])
         self.wait_for_action(action=snap_action)
 
         if self.config.firewall_id:
@@ -123,7 +124,7 @@ class DOGS:
 
         self.droplet.destroy()
 
-        print('Droplet destroyed')
+        print("Droplet destroyed")
 
         if cleanup:
             self.cleanup()
@@ -137,16 +138,26 @@ class DOGS:
 
         relevant.sort(key=lambda x: int(x.name.split("-")[-1]), reverse=True)
 
-        print(f"Deleting all but the newest {self.config.get('snapshot_max', 2)} snapshots")
-        for snapshot in relevant[self.config.get('snapshot_max', 2):]:
+        print(
+            f"Deleting all but the newest {self.config.get('snapshot_max', 2)} snapshots"
+        )
+        for snapshot in relevant[self.config.get("snapshot_max", 2) :]:
             snapshot.destroy()
 
 
 def find_droplets(prefix, config):
     manager = digitalocean.Manager(token=config.token)
-    return [f"{x.name} @ {x.ip_address}" for x in manager.get_all_droplets() if x.name.startswith(str(prefix))]
+    return [
+        f"{x.name} @ {x.ip_address}"
+        for x in manager.get_all_droplets()
+        if x.name.startswith(str(prefix))
+    ]
 
 
 def find_snapshots(prefix, config):
     manager = digitalocean.Manager(token=config.token)
-    return [f"{x.name}" for x in manager.get_all_snapshots() if x.name.startswith(str(prefix))]
+    return [
+        f"{x.name}"
+        for x in manager.get_all_snapshots()
+        if x.name.startswith(str(prefix))
+    ]
