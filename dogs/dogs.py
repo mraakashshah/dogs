@@ -60,7 +60,7 @@ class DOGS:
         newest = 0
         snapshot = None
         for snap in snapshots:
-            if snap.name.startswith(self.name):
+            if snap.name.startswith(str(self.name)):
                 if snap.name.endswith('base') and newest == 0:
                     snapshot = snap
                 else:
@@ -132,7 +132,7 @@ class DOGS:
         all_snapshots = self.manager.get_all_snapshots()
         relevant = []
         for snapshot in all_snapshots:
-            if snapshot.name.startswith(self.name):
+            if snapshot.name.startswith(str(self.name)):
                 relevant.append(snapshot)
 
         relevant.sort(key=lambda x: int(x.name.split("-")[-1]), reverse=True)
@@ -144,7 +144,7 @@ class DOGS:
 
 def find_droplets(prefix, config):
     manager = digitalocean.Manager(token=config.token)
-    return [f"{x.name} @ {x.ip_address}" for x in manager.get_all_droplets() if x.name.startswith(prefix)]
+    return [f"{x.name} @ {x.ip_address}" for x in manager.get_all_droplets() if x.name.startswith(str(prefix))]
 
 
 def find_snapshots(prefix, config):
