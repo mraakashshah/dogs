@@ -26,40 +26,39 @@ def find_config_file():
         raise Exception("No config file found!")
 
 
-def stats(server, config, details=False):
-    print(f"\nServer: {server}")
+def stats(server_config, general_config, details=False):
+    print(f"\nServer: {server_config}")
     tabbed = "\n    "
-    si = server
+    si = server_config
     print(f"    region: {si.region}")
     print(f"    size: {si.size}")
     print(f"    maximum snapshots: {si.snapshot_max}\n")
     if details:
-        drops = find_droplets(server, config)
+        drops = find_droplets(server_config, general_config)
         if drops:
             print(" Droplets:")
             print(f"    {tabbed.join(drops)}")
-        snaps = find_snapshots(server, config)
+        snaps = find_snapshots(server_config, general_config)
         if snaps:
             print(" Snapshots:")
             print(f"    {tabbed.join(snaps)}")
 
-
-def manage(config, config_file):
+def manage(server_config, config_file):
     server_continue = False
     for _ in count():
         if not server_continue:
             print("\nWhich server do you want to manage?")
-            opts = list(config.servers) + ['Exit']
+            opts = list(server_config.servers) + ['Exit']
             selection = cutie.select(options=opts)
             if selection == len(opts) - 1:
                 break
-            server_name = list(config.servers)[selection]
-            stats(server_name, config, details=False)
+            server_selection = list(server_config.servers)[selection]
+            stats(server_selection, server_config, details=False)
         else:
-            server_name = server_continue
+            server_selection = server_continue
         server_continue = False
 
-        dogs = DOGS(server_name, config_file)
+        dogs = DOGS(server_selection, config_file)
         if dogs.droplet:
             print(f"Running: {dogs.droplet.ip_address}")
         else:
@@ -85,8 +84,8 @@ def manage(config, config_file):
             print("\nRemoving old snapshots\n")
             dogs.cleanup()
         elif action == "View Server Info":
-            stats(server_name, config, details=True)
-            server_continue = server_name
+            stats(server_selection, server_config, details=True)
+            server_continue = server_selection
             continue
 
         print("\nWould you like to:")
@@ -99,8 +98,8 @@ def manage(config, config_file):
 
 def main():
     config_file = find_config_file()
-    cfg = Box.from_yaml(filename=config_file)
-    manage(cfg, config_file)
+    server_config = Box.from_yaml(filename=config_file)
+    manage(server_config, config_file)
 
 
 if __name__ == '__main__':
