@@ -26,6 +26,7 @@ cp config.yaml.example config.yaml
 # Update the config file to match your digital ocean settings
 python -m dogs
 
+# chmod -R 775 ./services
 # for factorio, run the ./factorio/create.sh
-# do the manual stuff at the bottom`
+# do the manual stuff at the bottom
 ```
