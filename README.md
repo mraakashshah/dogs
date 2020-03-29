@@ -26,7 +26,12 @@ cp config.yaml.example config.yaml
 # Update the config file to match your digital ocean settings
 python -m dogs
 
-# chmod -R 775 ./services
-# for factorio, run the ./factorio/create.sh
-# do the manual stuff at the bottom
+# Once Droplet is running (assuming you've added your public SSH to your account)
+ssh root@droplet_ip
+# scp -r ./services root@droplet_ip
+# find factorio (if you need to)
+chmod -R 775 ./services
+# for factorio, run the
+./factorio/create.sh
+# do the manual stuff it tells you to do
 ```
