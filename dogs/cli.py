@@ -72,6 +72,7 @@ def manage(servers_config, config_file):
             "Turn On",
             "Shutdown",
             "View Server Info",
+            "View Snapshots",
             "Cleanup Old Snapshots",
             "Cancel",
         ]
@@ -84,6 +85,9 @@ def manage(servers_config, config_file):
         elif action == "Shutdown":
             print("\nShutting down droplet\n")
             dogs.destroy()
+        elif action == "View Snapshots":
+            print("\nFinding snapshots\n")
+            dogs.show_snapshots()
         elif action == "Cleanup Old Snapshots":
             print("\nRemoving old snapshots\n")
             dogs.cleanup()

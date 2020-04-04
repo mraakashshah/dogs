@@ -57,20 +57,28 @@ class DOGS:
         self.droplet = new_droplet
 
     def find_newest_snapshot(self):
-        print("Finding newest snapshot")
-        snapshots = self.manager.get_all_snapshots()
-        newest = 0
-        snapshot = None
+        print("\nFinding newest snapshot\n")
+        snapshots = [
+            snap
+            for snap in self.manager.get_all_snapshots()
+            if snap.name.startswith(str(self.name))
+        ]
+        # id check
+        snapshot = snapshots[0]
+        # time appending check
+        # newest = 0
+        # snapshot = None
         for snap in snapshots:
-            print(snap)
+            # print(snap)
             if snap.name.startswith(str(self.name)):
-                if snap.name.endswith("base") and newest == 0:
+                # id check
+                if snap.id > snapshot.id:
                     snapshot = snap
-                else:
-                    dt = int(snap.name.split("-")[-1])
-                    if dt > newest:
-                        newest = dt
-                        snapshot = snap
+                # time appending check
+                # dt = int(snap.name.split("-")[-1])
+                # if dt > newest:
+                #     newest = dt
+                #     snapshot = snap
         return snapshot
 
     def wait_for_action(self, action=None, action_name=None):
@@ -93,6 +101,14 @@ class DOGS:
                 raise Exception(action.status)
         else:
             raise AssertionError(f"Could not {action.type}")
+
+    def show_snapshots(self):
+        all_snapshots = self.manager.get_all_snapshots()
+        for snap in all_snapshots:
+            if snap.name.startswith(str(self.name)):
+                print(snap)
+        newest = self.find_newest_snapshot()
+        print(newest)
 
     def create(self):
         snapshot = self.find_newest_snapshot()
@@ -141,9 +157,9 @@ class DOGS:
         relevant.sort(key=lambda x: int(x.name.split("-")[-1]), reverse=True)
 
         print(
-            f"Deleting all but the newest {self.config.get('snapshot_max', 2)} snapshots"
+            f"Deleting all but the newest {self.config.get('snapshot_max', 5)} snapshots"
         )
-        for snapshot in relevant[self.config.get("snapshot_max", 2) :]:
+        for snapshot in relevant[self.config.get("snapshot_max", 5) :]:
             snapshot.destroy()
 
 
