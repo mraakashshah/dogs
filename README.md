@@ -35,3 +35,28 @@ chmod -R 775 ./services
 ./factorio/create.sh
 # do the manual stuff it tells you to do
 ```
+
+If you use mods in factorio, I suggest using the [fac-cli](https://github.com/mickael9/fac)
+
+In `~/.config/fac/config.ini` put
+```
+[paths]
+data-path = /opt/factorio/factorio/data
+write-path = /opt/factorio/factorio
+```
+
+So, all together
+```
+# install pip3
+apt install python3-pip
+# install fac
+pip3 install -e "git+https://github.com/mickael9/fac.git#egg=fac-cli"
+# create ~/.config/fac/config.ini
+mkdir ~/.config
+mkdir ~/.config/fac
+touch ~/.config/fac/config.ini
+echo "[paths]" >> ~/.config/fac/config.ini
+echo "data-path = /opt/factorio/factorio/data" >> ~/.config/fac/config.ini
+echo "write-path = /opt/factorio/factorio" >> ~/.config/fac/config.ini
+fac
+```
