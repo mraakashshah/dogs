@@ -60,3 +60,12 @@ echo "data-path = /opt/factorio/factorio/data" >> ~/.config/fac/config.ini
 echo "write-path = /opt/factorio/factorio" >> ~/.config/fac/config.ini
 fac
 ```
+
+---
+
+Existing bugs:
+* document factorio version updating
+* update.sh does not work
+* document mod updating
+
+see: https://wiki.factorio.com/Multiplayer#Additional_configuration
